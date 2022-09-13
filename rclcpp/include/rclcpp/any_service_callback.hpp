@@ -154,7 +154,8 @@ public:
   dispatch(
     const std::shared_ptr<rclcpp::Service<ServiceT>> & service_handle,
     const std::shared_ptr<rmw_request_id_t> & request_header,
-    std::shared_ptr<typename ServiceT::Request> request)
+    std::shared_ptr<typename ServiceT::Request> request,
+    std::shared_ptr<typename ServiceT::Response> response = std::make_shared<typename ServiceT::Response>())
   {
     TRACEPOINT(callback_start, static_cast<const void *>(this), false);
     if (std::holds_alternative<std::monostate>(callback_)) {
@@ -172,8 +173,6 @@ public:
       cb(service_handle, request_header, std::move(request));
       return nullptr;
     }
-    // auto response = allocate_shared<typename ServiceT::Response, Allocator>();
-    auto response = std::make_shared<typename ServiceT::Response>();
     if (std::holds_alternative<SharedPtrCallback>(callback_)) {
       (void)request_header;
       const auto & cb = std::get<SharedPtrCallback>(callback_);
